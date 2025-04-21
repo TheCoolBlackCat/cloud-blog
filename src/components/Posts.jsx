@@ -15,7 +15,7 @@ function Posts() {
     <div>
       <h1>All Posts</h1>
       <div className="posts">
-        {posts.map((post) => {
+        {posts.length > 0 ? posts.map((post) => {
           return (
             <div key={post.postUid}>
               <h3>{post.title}</h3>
@@ -23,7 +23,7 @@ function Posts() {
               <a href={`/?post=${post.postUid}`}>Read More</a>
             </div>
           );
-        })}
+        }) : <p>No posts yet!</p>}
       </div>
     </div>
   );
