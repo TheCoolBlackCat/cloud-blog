@@ -12,7 +12,7 @@ const mapResponse = (supabasePost) => {
         postUid: supabasePost.post_uid,
         title: supabasePost.title,
         body: supabasePost.body,
-        createdAt: supabasePost.createdAt,
+        createdAt: supabasePost.created_at,
         author: supabasePost.users.name
     }
 }
