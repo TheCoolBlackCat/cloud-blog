@@ -34,12 +34,17 @@ const handleRequest = async (body) => {
       .from("posts")
       .select(selectedColumns)
       .eq("post_uid", postUid)
-      .single();
+      .maybeSingle();
+
+    if (!data) {
+      return { statusCode: 404, message: "No post with that UID exists" };
+    }
 
     if (error) {
       console.error("supabase error:", error);
-      return { statusCode: 500, message: "An error occured", error };
+      return { statusCode: 500, message: "An error occured" };
     }
+
     return {
       statusCode: 200,
       body: { post: mapResponse(data) },
