@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .env
+lambda/node_modules
+lambda.zip
