@@ -21,8 +21,8 @@ const mapResponse = (supabasePost) => {
   };
 };
 
-const handleRequest = async (body) => {
-  const postUid = body.postUid;
+const handleRequest = async (event) => {
+  const postUid = event.queryStringParameters?.postUid;
   console.log("postUid:", postUid);
 
   if (postUid) {
@@ -65,11 +65,5 @@ const handleRequest = async (body) => {
 };
 
 export const handler = async (event) => {
-  try {
-    const rawBody = event.body;
-    const body = typeof rawBody === "string" ? JSON.parse(rawBody) : {};
-    return JSON.stringify(await handleRequest(body));
-  } catch {
-    return JSON.stringify({ statusCode: 400, message: "Invalid body" });
-  }
+  return JSON.stringify(await handleRequest(event));
 };
