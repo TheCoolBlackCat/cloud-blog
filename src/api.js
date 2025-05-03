@@ -7,45 +7,38 @@ const axiosClient = axios.create({
   timeout: 1000,
 });
 
-export const getPosts = () => {
-  const [apiState, setApiState] = useState([[], true, undefined]);
+const queryState = (
+  url,
+  handler,
+  { params = undefined, defaultValue = undefined }
+) => {
+  const [apiState, setApiState] = useState([defaultValue, true, undefined]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axiosClient.get();
-        setApiState([data.body.posts, false, undefined]);
-      } catch (error) {
-        setApiState([[], false, error]);
-      }
-    };
-    // Prevents infinite requests
-    if (apiState[1]) {
-      fetchData();
-    }
-  }, [apiState]);
-
-  return apiState;
-};
-
-export const getPost = (postUid) => {
-  const [apiState, setApiState] = useState([undefined, true, undefined]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axiosClient.get(undefined, { params: {postUid} });
-        setApiState([data.body.post, false, undefined]);
+        const { data } = await axiosClient.get(url, { params });
+        const res = handler(data);
+        setApiState([res, false, undefined]);
       } catch (error) {
         setApiState([null, false, error]);
       }
     };
     // Prevents infinite requests
-    // This will prevent changing the param on the fly, but thats okay here
     if (apiState[1]) {
       fetchData();
     }
-  }, [apiState, postUid]);
+  }, [apiState, params]);
 
   return apiState;
+};
+
+export const getPosts = () => {
+  return queryState(undefined, (data) => data.body.posts, { defaultValue: [] });
+};
+
+export const getPost = (postUid) => {
+  return queryState(undefined, (data) => data.body.post, {
+    params: { postUid },
+  });
 };
