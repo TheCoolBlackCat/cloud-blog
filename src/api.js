@@ -1,52 +1,51 @@
-import { createClient } from '@supabase/supabase-js'
-import { useEffect, useState } from 'react'
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const selectedColumns = 'post_uid,title,body,created_at,users(user_uid,name)'
-
-const mapResponse = (supabasePost) => {
-    if (!supabasePost) return undefined
-    return {
-        postUid: supabasePost.post_uid,
-        title: supabasePost.title,
-        body: supabasePost.body,
-        createdAt: supabasePost.created_at,
-        author: supabasePost.users.name
-    }
-}
+const baseURL = import.meta.env.VITE_API_URL;
+const axiosClient = axios.create({
+  baseURL,
+  timeout: 1000,
+});
 
 export const getPosts = () => {
-    const [apiState, setApiState] = useState([[], true, undefined]);
+  const [apiState, setApiState] = useState([[], true, undefined]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const { data, error } = await supabase
-                .from('posts')
-                .select(selectedColumns)
-            setApiState([data.map(mapResponse), false, error])
-        }
-        fetchData()
-    }, [apiState])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axiosClient.get();
+        setApiState([data.body.posts, false, undefined]);
+      } catch (error) {
+        setApiState([[], false, error]);
+      }
+    };
+    // Prevents infinite requests
+    if (apiState[1]) {
+      fetchData();
+    }
+  }, [apiState]);
 
-    return apiState;
-}
+  return apiState;
+};
 
 export const getPost = (postUid) => {
-    const [apiState, setApiState] = useState([undefined, true, undefined]);
+  const [apiState, setApiState] = useState([undefined, true, undefined]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const { data, error } = await supabase
-                .from('posts')
-                .select(selectedColumns)
-                .eq('post_uid', postUid)
-                .single()
-            setApiState([mapResponse(data), false, error])
-        }
-        fetchData()
-    }, [apiState, postUid])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axiosClient.get(undefined, { params: {postUid} });
+        setApiState([data.body.post, false, undefined]);
+      } catch (error) {
+        setApiState([null, false, error]);
+      }
+    };
+    // Prevents infinite requests
+    // This will prevent changing the param on the fly, but thats okay here
+    if (apiState[1]) {
+      fetchData();
+    }
+  }, [apiState, postUid]);
 
-    return apiState;
-}
+  return apiState;
+};
