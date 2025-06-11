@@ -1,12 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
 import { version as uuidVersion } from "uuid";
 import { validate as uuidValidate } from "uuid";
+import { selectSinglePost, selectAllPosts } from "./db.js";
 
 const isUid = (uuid) => uuidValidate(uuid) && uuidVersion(uuid) === 4;
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const selectedColumns = "post_uid,title,body,created_at,users(user_uid,name)";
 
@@ -30,37 +26,33 @@ const handleRequest = async (event) => {
       return { statusCode: 400, message: "Invalid postUid" };
     }
     // Get Single Post
-    const { data, error } = await supabase
-      .from("posts")
-      .select(selectedColumns)
-      .eq("post_uid", postUid)
-      .maybeSingle();
+    const { data, error } = await selectSinglePost(postUid);
 
     if (!data) {
       return { statusCode: 404, message: "No post with that UID exists" };
     }
 
     if (error) {
-      console.error("supabase error:", error);
+      console.error("DB Error:", error);
       return { statusCode: 500, message: "An error occured" };
     }
 
     return {
       statusCode: 200,
-      body: { post: mapResponse(data) },
+      body: { post: data },
     };
   }
 
   // Get All Posts
-  const { data, error } = await supabase.from("posts").select(selectedColumns);
+  const { data, error } = await selectAllPosts();
 
   if (error) {
-    console.error("supabase error:", error);
+    console.error("DB Error:", error);
     return { statusCode: 500, message: "An error occured" };
   }
   return {
     statusCode: 200,
-    body: { posts: data.map(mapResponse) },
+    body: { posts: data },
   };
 };
 
