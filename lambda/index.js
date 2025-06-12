@@ -4,19 +4,6 @@ import { selectSinglePost, selectAllPosts } from "./db.js";
 
 const isUid = (uuid) => uuidValidate(uuid) && uuidVersion(uuid) === 4;
 
-const selectedColumns = "post_uid,title,body,created_at,users(user_uid,name)";
-
-const mapResponse = (supabasePost) => {
-  if (!supabasePost) return undefined;
-  return {
-    postUid: supabasePost.post_uid,
-    title: supabasePost.title,
-    body: supabasePost.body,
-    createdAt: supabasePost.created_at,
-    author: supabasePost.users.name,
-  };
-};
-
 const handleRequest = async (event) => {
   const postUid = event.queryStringParameters?.postUid;
   console.log("postUid:", postUid);

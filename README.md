@@ -1,6 +1,6 @@
 # Cloud Blog
 
-Simple React + Vite blog app, using Supabase via AWS Lambda for the data
+Simple React + Vite blog app, using AWS Lambda + RDS for the data
 
 ## Quick Start
 
@@ -12,4 +12,15 @@ VITE_API_URL=
 ```bash
 npm install
 npm run dev
+```
+
+## In the Lambda:
+
+The following environment variables should be set
+
+```
+DB_USER=adauser
+DB_PASSWORD=<password>
+DB_HOST=<database-connection-string>.rds.amazonaws.com
+DB_NAME=production
 ```
