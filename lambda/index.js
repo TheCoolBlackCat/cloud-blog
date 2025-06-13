@@ -48,7 +48,9 @@ export const handler = async (event) => {
   return {
     ...response,
     body: JSON.stringify(
-      response.message ? { message: response.message } : response.body,
+      response.message
+        ? { message: response.message }
+        : { body: response.body },
     ),
   };
 };
