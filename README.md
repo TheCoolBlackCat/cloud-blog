@@ -24,3 +24,6 @@ DB_PASSWORD=<password>
 DB_HOST=<database-connection-string>.rds.amazonaws.com
 DB_NAME=production
 ```
+
+## Read more
+- You can find the `pg` docs here: https://node-postgres.com
