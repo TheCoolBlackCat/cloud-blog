@@ -44,5 +44,11 @@ const handleRequest = async (event) => {
 };
 
 export const handler = async (event) => {
-  return JSON.stringify(await handleRequest(event));
+  const response = await handleRequest(event);
+  return {
+    ...response,
+    body: JSON.stringify(
+      response.message ? { message: response.message } : response.body,
+    ),
+  };
 };
